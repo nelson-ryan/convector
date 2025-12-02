@@ -31,9 +31,9 @@ class Gobbler:
 
     def __iter__(self):
         if self.wikipath.is_file():
-            self._gobble_file(self.wikipath)
+            yield from self._gobble_file(self.wikipath)
         elif self.wikipath.is_dir():
-            self._gobble_dir(self.wikipath)
+            yield from self._gobble_dir(self.wikipath)
         else:
             raise TypeError
 
@@ -57,10 +57,11 @@ class Gobbler:
     def _gobble_dir(self, path):
         for root, _, files in os.walk(path):
             for file in files:
-                if not file.endswith(".txt"): # should never apply, but whatev
+                if not re.match(pattern = r'^wiki_\d\d$', string = file):
+                    # should never apply, but whatev
                     continue
                 filepath = Path(root) / file
-                self._gobble_file(filepath)
+                yield from self._gobble_file(filepath)
 
 if __name__ == '__main__':
     wikidump = Gobbler(wikipath)
@@ -73,3 +74,4 @@ if __name__ == '__main__':
         min_count = 10, # following Thurnbauer et al
         workers = multiprocessing.cpu_count(), # all of dems!
     )
+    model.save("convector.model")
