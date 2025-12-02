@@ -19,3 +19,8 @@ If I understand the templates correctly, they might simply include duplication;
 this either adds nothing or makes for more dense clusters in the DBSCAN
 
 
+Install spacy model "en_core_web_md"
+```bash
+python -m spacy download en_core_web_md
+```
+
