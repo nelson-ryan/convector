@@ -1,10 +1,16 @@
+# convector
+from config import wikipath
+
+# py
 import os
 import re
 from pathlib import Path
+
+# nlp
 import spacy
 from gensim.models import Word2Vec
+import multiprocessing
 
-from config import wikipath
 
 # gobble wikipedia files (omit <doc... and </doc> lines: skip title line that
 # immediately follows <doc opening,
@@ -57,4 +63,13 @@ class Gobbler:
                 self._gobble_file(filepath)
 
 if __name__ == '__main__':
-    gobbler = Gobbler(wikipath)
+    wikidump = Gobbler(wikipath)
+
+    model = Word2Vec(
+        sentences = wikidump,
+        sg = 0, # CBOW
+        window = 5, # following Thurnbauer et al
+        epochs = 5, # following Thurnbauer et al
+        min_count = 10, # following Thurnbauer et al
+        workers = multiprocessing.cpu_count(), # all of dems!
+    )
