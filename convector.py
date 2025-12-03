@@ -1,10 +1,18 @@
 # convector
-from config import wikipath, tokenized_output
+from config import wikipath, tokenized_output, modelpath
 
 # py
 import os
 import re
 from pathlib import Path
+import time
+import logging
+
+logging.basicConfig(
+    format = "%(asctime)s - %(levelname)s - %(message)s",
+    filename = "log.log",
+    level = logging.DEBUG
+)
 
 # nlp
 import spacy
@@ -19,7 +27,7 @@ class Gobbler:
     """ Preprocessor to tokenize and lemmatize Wikipedia dump files
     """
     NLP = None # lazy loading
-    def __init__(self, wikipath: Path, outfile: Path = tokenized_output):
+    def __init__(self, wikipath: Path, outfile: Path):
         """ wikipath (Path): parent path to extracted wikipedia dump
             OR path to single extracted wikipedia file (for testing)
 
@@ -50,7 +58,7 @@ class Gobbler:
         """ Reads all Wikipedia lines and produces lemmatized tokens.
             path (Path): individual wikipedia dump file
         """
-        print(f"Reading {path}")
+        logging.info(f"Gobbler Reading {path}")
         with open(path, mode = "r", encoding = "utf-8") as file:
             for doc in Gobbler.NLP.pipe(file, batch_size = 100):
                 if re.match(pattern = r'^\w*$', string = doc.text):
@@ -86,14 +94,18 @@ class TrainingIterator:
 
 if __name__ == '__main__':
 
-    print(wikipath)
-
     # Preprocessing (tokenization/lemmatization) of Wikipedia extracted files
-    wikidump = Gobbler(wikipath)
-    wikidump.gobble()
-    wiki_processed = wikidump.outfile
+    if not tokenized_output.exists():
+        logging.info("Postprocessing file not found. Starting preprocessing.")
+        start = time.time()
+        wikidump = Gobbler(wikipath, tokenized_output)
+        wikidump.gobble()
+        logging.info(f"Preprocessing complete. Time {time.time() - start}")
+    wiki_processed = tokenized_output
 
     # Train Word2Vec model
+    logging.info("Starting model training.")
+    start = time.time()
     sentences = TrainingIterator(wiki_processed)
     model = Word2Vec(
         sentences = sentences,
@@ -103,4 +115,5 @@ if __name__ == '__main__':
         min_count = 10, # following Thurnbauer et al
         workers = multiprocessing.cpu_count() - 1, # (nearly) all of dems!
     )
-    model.save("convector.model")
+    logging.info(f"Model training complete. Time {time.time() - start}")
+    model.save(str(modelpath))
