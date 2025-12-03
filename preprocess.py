@@ -2,18 +2,24 @@ import sys
 from pathlib import Path
 import re
 
+# using command line argument, pattern of extracted Wikipedia files
 name =  f"wiki_{int(sys.argv[1]):02d}"
+# this is silly because I just defined `name` to match the pattern
 if not re.match(pattern = r'wiki_\d\d', string = name):
     raise TypeError
+
+# get full path to file
 source = Path(__file__).parent / "wikidump" / "text_notemplate" / "AA" / name
 if not source.exists():
     raise FileNotFoundError("sourcefile")
+
+# define output file
 dest = Path(__file__).parent / "wikidump" / "processed" / name
 if not dest.parent.exists():
     raise FileNotFoundError("destdir")
 
-
 from convector import Gobbler
 
+# Run Gobbler's SpaCy processing, outputting to file
 gobbler = Gobbler(wikipath = source, outfile = dest)
 gobbler.gobble()

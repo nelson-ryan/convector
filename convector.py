@@ -1,5 +1,5 @@
 # convector
-from config import wikipath, tokenized_output, modelpath
+from config import wikipath, tokenized_output_dir, tokenized_output, modelpath
 
 # py
 import os
@@ -23,6 +23,7 @@ import multiprocessing
 # gobble wikipedia files (omit <doc... and </doc> lines: skip title line that
 # immediately follows <doc opening,
 
+#TODO make a parent class for these two classes; there's just too much overlap
 class Gobbler:
     """ Preprocessor to tokenize and lemmatize Wikipedia dump files
     """
@@ -58,11 +59,14 @@ class Gobbler:
         """ Reads all Wikipedia lines and produces lemmatized tokens.
             path (Path): individual wikipedia dump file
         """
+        start = time.time()
         logging.info(f"Gobbler Reading {path}")
         with open(path, mode = "r", encoding = "utf-8") as file:
             for doc in Gobbler.NLP.pipe(file, batch_size = 100):
                 if re.match(pattern = r'^\w*$', string = doc.text):
                     # should exclude titles alone on a line, and empty lines
+                    # doesn't *quite* work; titles ending in periods are kept
+                    # and some empty lines still appear in output
                     continue
                 if re.match(pattern = r'^<\\?.*>$', string = doc.text):
                     # exclude doc tags
@@ -72,8 +76,9 @@ class Gobbler:
                         token.lemma_.lower() for token in sentence
                         if not token.is_space
                         and not token.is_punct
-                        and not  token.is_stop
+                        and not token.is_stop
                     ]
+        logging.info(f"Gobbler completed {path}")
 
     def _gobble_dir(self, path):
         for root, _, files in os.walk(path):
@@ -87,21 +92,43 @@ class Gobbler:
 class TrainingIterator:
     def __init__(self, path: Path):
         self.path = path
+
     def __iter__(self):
-        with open(self.path) as file:
+        if not isinstance(self.path, Path):
+            raise TypeError
+        elif self.path.is_file():
+            yield from self._yield_file(self.path)
+        elif self.path.is_dir():
+            yield from self._yield_dir(self.path)
+        else:
+            raise TypeError
+
+    def _yield_file(self, path: Path):
+        with open(path) as file:
             while line := file.readline():
                 yield line.strip().split(" ")
+
+    def _yield_dir(self, path: Path):
+        for root, _, files in os.walk(path):
+            for file in files:
+                if not file == "wiki_00":
+                # if not re.match(pattern = r'^wiki_\d\d$', string = file):
+                    continue
+                filepath = Path(root) / file
+                yield from self._yield_file(filepath)
 
 if __name__ == '__main__':
 
     # Preprocessing (tokenization/lemmatization) of Wikipedia extracted files
-    if not tokenized_output.exists():
+    if False:
+    # TODO separate this altogether; it just takes too long on its own
+    # if not tokenized_output.exists():
         logging.info("Postprocessing file not found. Starting preprocessing.")
         start = time.time()
         wikidump = Gobbler(wikipath, tokenized_output)
         wikidump.gobble()
         logging.info(f"Preprocessing complete. Time {time.time() - start}")
-    wiki_processed = tokenized_output
+    wiki_processed = tokenized_output_dir
 
     # Train Word2Vec model
     logging.info("Starting model training.")
