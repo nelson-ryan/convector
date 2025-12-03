@@ -111,7 +111,7 @@ class TrainingIterator:
     def _yield_dir(self, path: Path):
         for root, _, files in os.walk(path):
             for file in files:
-                if not file == "wiki_00":
+                if file not in ["wiki_00", "wiki_01", "wiki_02", "wiki_03"]:
                 # if not re.match(pattern = r'^wiki_\d\d$', string = file):
                     continue
                 filepath = Path(root) / file
@@ -142,5 +142,5 @@ if __name__ == '__main__':
         min_count = 10, # following Thurnbauer et al
         workers = multiprocessing.cpu_count() - 1, # (nearly) all of dems!
     )
-    logging.info(f"Model training complete. Time {time.time() - start}")
     model.save(str(modelpath))
+    logging.info(f"Model training complete. Time {time.time() - start}")

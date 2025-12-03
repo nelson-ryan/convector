@@ -24,3 +24,5 @@ Install spacy model "en_core_web_md"
 python -m spacy download en_core_web_md
 ```
 
+Word2Vec training on only one file took 10 minutes.
+Expect linear time?
