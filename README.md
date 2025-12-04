@@ -25,4 +25,6 @@ python -m spacy download en_core_web_md
 ```
 
 Word2Vec training on only one file took 10 minutes.
-Expect linear time?
+Four files took 40 minutes; it seems to be linear.
+
+Expect the full training to take roughly 190 minutes.

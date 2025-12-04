@@ -1,5 +1,7 @@
 # convector
-from config import wikipath, tokenized_output_dir, tokenized_output, modelpath
+from config import (
+    wikipath, tokenized_output_dir, tokenized_output, modelpath
+)
 
 # py
 import os
@@ -9,7 +11,7 @@ import time
 import logging
 
 logging.basicConfig(
-    format = "%(asctime)s - %(levelname)s - %(message)s",
+    format = "%(asctime)s | %(levelname)s | %(message)s",
     filename = "log.log",
     level = logging.DEBUG
 )
@@ -60,7 +62,7 @@ class Gobbler:
             path (Path): individual wikipedia dump file
         """
         start = time.time()
-        logging.info(f"Gobbler Reading {path}")
+        logging.info(f"Gobbler reading {path}")
         with open(path, mode = "r", encoding = "utf-8") as file:
             for doc in Gobbler.NLP.pipe(file, batch_size = 100):
                 if re.match(pattern = r'^\w*$', string = doc.text):
@@ -78,7 +80,7 @@ class Gobbler:
                         and not token.is_punct
                         and not token.is_stop
                     ]
-        logging.info(f"Gobbler completed {path}")
+        logging.info(f"Gobbler completed {path} | Time: {time.time() - start}")
 
     def _gobble_dir(self, path):
         for root, _, files in os.walk(path):
