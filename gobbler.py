@@ -103,8 +103,8 @@ class TrainingIterator:
     def _yield_dir(self, path: Path):
         for root, _, files in os.walk(path):
             for file in files:
-                if file not in ["wiki_00", "wiki_01", "wiki_02", "wiki_03"]:
-                # if not re.match(pattern = r'^wiki_\d\d$', string = file):
+                # if file not in ["wiki_00", "wiki_01", "wiki_02", "wiki_03"]:
+                if not re.match(pattern = r'^wiki_\d\d$', string = file):
                     continue
                 filepath = Path(root) / file
                 yield from self._yield_file(filepath)

@@ -1,7 +1,8 @@
 # convector
 from config import (
-    wikipath, tokenized_output_dir, tokenized_output, modelpath
+    wikipath, tokenized_output_dir, tokenized_output, modelpath, K
 )
+from gobbler import Gobbler, TrainingIterator
 
 # py
 from pathlib import Path
@@ -11,14 +12,15 @@ import logging
 logging.basicConfig(
     format = "%(asctime)s | %(levelname)s | %(message)s",
     filename = "log.log",
-    level = logging.DEBUG
+    level = logging.INFO
 )
+logging.getLogger().addHandler(logging.StreamHandler())
 
 # nlp
 from gensim.models import Word2Vec
 import multiprocessing
 
-def context_vectors(word):
+def context_vectors(words):
     reader = TrainingIterator(tokenized_output_dir)
     word = "bangle"
     outfile = Path(f"{word}.txt")
@@ -54,10 +56,18 @@ if __name__ == '__main__':
     model = Word2Vec(
         sentences = sentences,
         sg = 0, # CBOW
-        window = 5, # following Thurnbauer et al
+        window = K, # 5, following Thurnbauer et al
         epochs = 5, # following Thurnbauer et al
         min_count = 10, # following Thurnbauer et al
         workers = multiprocessing.cpu_count() - 1, # (nearly) all of dems!
     )
     model.save(str(modelpath))
     logging.info(f"Model training complete. Time {time.time() - start}")
+
+    # TODO get from Connections
+    words = ["bangle", # "chain", "charm", "ring",
+     #        "event", "function", "party", "reception",
+     #        "appeal", "campaign", "lobby", "press",
+     #        "iron", "macho", "piano", "rocket"
+    ]
+    #context_vectors(words)
