@@ -12,14 +12,37 @@ logging.basicConfig(
 )
 
 
-# gobble wikipedia files (omit <doc... and </doc> lines: skip title line that
-# immediately follows <doc opening,
+class Gobbler:
+    """ Parent class for iterators
+        path (Path): path to source, file or dir
+    """
+    def __init__(self, source):
+        self.source = source
+
+    def __iter__(self):
+        if isinstance(self.source, Path):
+            if self.source.is_file():
+                yield from self._gobble_file(self.source)
+            if self.source.is_dir():
+                yield from self._gobble_dir(self.source)
+        elif isinstance(self.source, list):
+            yield from self._process(self.source)
+
+    def _gobble_file(self, source):
+        raise NotImplementedError
+
+    def _gobble_dir(self, source):
+        raise NotImplementedError
+
+    def _process(self, source):
+        raise NotImplementedError
+
 
 #TODO make a parent class for these two classes; there's just too much overlap
-class Gobbler:
+class Preprocessor:
     """ Preprocessor to tokenize and lemmatize Wikipedia dump files
     """
-    NLP = None # lazy loading
+    NLP = spacy.load("en_core_web_md")
     def __init__(self, wikipath: Path, outfile: Path):
         """ wikipath (Path): parent path to extracted wikipedia dump
             OR path to single extracted wikipedia file (for testing)
@@ -28,9 +51,6 @@ class Gobbler:
         """
         self.wikipath = wikipath
         self.outfile = outfile
-        if not Gobbler.NLP: # lazy loading of spacy pipeline
-            print("Loading SpaCy")
-            Gobbler.NLP = spacy.load("en_core_web_md")
 
     def gobble(self):
         with open(self.outfile, mode = "w", encoding = "utf-8") as file:
@@ -52,9 +72,9 @@ class Gobbler:
             path (Path): individual wikipedia dump file
         """
         start = time.time()
-        logging.info(f"Gobbler reading {path}")
+        logging.info(f"Preprocessor reading {path}")
         with open(path, mode = "r", encoding = "utf-8") as file:
-            for doc in Gobbler.NLP.pipe(file, batch_size = 100):
+            for doc in Preprocessor.NLP.pipe(file, batch_size = 100):
                 if re.match(pattern = r'^\w*$', string = doc.text):
                     # should exclude titles alone on a line, and empty lines
                     # doesn't *quite* work; titles ending in periods are kept
@@ -70,7 +90,9 @@ class Gobbler:
                         and not token.is_punct
                         and not token.is_stop
                     ]
-        logging.info(f"Gobbler completed {path} | Time: {time.time() - start}")
+        logging.info(
+            f"Preprocessor completed {path} | Time: {time.time() - start}"
+        )
 
     def _gobble_dir(self, path):
         for root, _, files in os.walk(path):
@@ -89,24 +111,24 @@ class TrainingIterator:
         if not isinstance(self.path, Path):
             raise TypeError
         elif self.path.is_file():
-            yield from self._yield_file(self.path)
+            yield from self._gobble_file(self.path)
         elif self.path.is_dir():
-            yield from self._yield_dir(self.path)
+            yield from self._gobble_dir(self.path)
         else:
             raise TypeError
 
-    def _yield_file(self, path: Path):
+    def _gobble_file(self, path: Path):
         with open(path) as file:
             while line := file.readline():
                 yield line.strip().split(" ")
 
-    def _yield_dir(self, path: Path):
+    def _gobble_dir(self, path: Path):
         for root, _, files in os.walk(path):
             for file in files:
                 # if file not in ["wiki_00", "wiki_01", "wiki_02", "wiki_03"]:
                 if not re.match(pattern = r'^wiki_\d\d$', string = file):
                     continue
                 filepath = Path(root) / file
-                yield from self._yield_file(filepath)
+                yield from self._gobble_file(filepath)
 
 

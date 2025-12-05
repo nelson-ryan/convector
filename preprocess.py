@@ -1,4 +1,4 @@
-from convector import Gobbler
+from gobbler import Preprocessor
 import sys
 from pathlib import Path
 import re
@@ -28,7 +28,7 @@ dest = Path(__file__).parent / "wikidump" / "processed" / name
 if not dest.parent.exists():
     raise FileNotFoundError("destdir")
 
-# Run Gobbler's SpaCy processing, outputting to file
-gobbler = Gobbler(wikipath = source, outfile = dest)
-gobbler.gobble()
+# Run Preprocessor's SpaCy processing, outputting to file
+preprocessor = Preprocessor(wikipath = source, outfile = dest)
+preprocessor.gobble()
 logging.info(f"Processing of {name} complete | Time: {time.time() - start}")

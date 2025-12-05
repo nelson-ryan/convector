@@ -65,7 +65,7 @@ if __name__ == '__main__':
     logging.info(f"Model training complete. Time {time.time() - start}")
 
     # TODO get from Connections
-    words = ["bangle", # "chain", "charm", "ring",
+    words = ["bangle", "chain", "charm", "ring",
      #        "event", "function", "party", "reception",
      #        "appeal", "campaign", "lobby", "press",
      #        "iron", "macho", "piano", "rocket"

@@ -28,3 +28,5 @@ Word2Vec training on only one file took 10 minutes.
 Four files took 40 minutes; it seems to be linear.
 
 Expect the full training to take roughly 190 minutes.
+Took 213 (just over 3.5 hours), but I admittedly stole some resources by using
+the computer while it was running.
