@@ -118,6 +118,7 @@ class TrainingIterator:
             raise TypeError
 
     def _gobble_file(self, path: Path):
+        logging.info(f"Reading {path}")
         with open(path) as file:
             while line := file.readline():
                 yield line.strip().split(" ")
@@ -125,7 +126,7 @@ class TrainingIterator:
     def _gobble_dir(self, path: Path):
         for root, _, files in os.walk(path):
             for file in files:
-                # if file not in ["wiki_00", "wiki_01", "wiki_02", "wiki_03"]:
+                # if file not in ["wiki_18"]:
                 if not re.match(pattern = r'^wiki_\d\d$', string = file):
                     continue
                 filepath = Path(root) / file
