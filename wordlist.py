@@ -3,14 +3,7 @@ from gobbler import Preprocessor, TrainingIterator
 from config import modelpath, tokenized_output_dir, K
 from gensim.models import Word2Vec
 import numpy as np
-import logging
-
-logging.basicConfig(
-    format = "%(asctime)s | %(levelname)s | %(message)s",
-    filename = "log.log",
-    level = logging.INFO
-)
-logging.getLogger().addHandler(logging.StreamHandler())
+from config import logging
 
 
 class WordList:

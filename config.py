@@ -1,3 +1,13 @@
+import logging
+
+logging.basicConfig(
+    format = "%(asctime)s | %(levelname)s | %(message)s",
+    filename = "log.log",
+    level = logging.INFO
+)
+logging.getLogger().addHandler(logging.StreamHandler())
+logging = logging.getLogger()
+
 from pathlib import Path
 
 K = 5

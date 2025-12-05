@@ -3,13 +3,7 @@ import os
 import re
 from pathlib import Path
 import time
-import logging
-
-logging.basicConfig(
-    format = "%(asctime)s | %(levelname)s | %(message)s",
-    filename = "log.log",
-    level = logging.DEBUG
-)
+from config import logging
 
 
 class Gobbler:
