@@ -97,7 +97,7 @@ class Preprocessor:
                 filepath = Path(root) / file
                 yield from self._gobble_file(filepath)
 
-class TrainingIterator:
+class ReaderIterator:
     def __init__(self, path: Path):
         self.path = path
 

@@ -1,5 +1,5 @@
 from functools import cached_property
-from gobbler import Preprocessor, TrainingIterator
+from gobbler import Preprocessor, ReaderIterator
 from config import modelpath, tokenized_output_dir, K
 from gensim.models import Word2Vec
 import numpy as np
@@ -29,7 +29,7 @@ class WordList:
         return self._get_contextwords()
 
     def _get_contextwords(self) -> dict[str, list[list]]:
-        reader = TrainingIterator(tokenized_output_dir)
+        reader = ReaderIterator(tokenized_output_dir)
         result = {}
         for line in reader:
             for lemma in self.lemmas:
