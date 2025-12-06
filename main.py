@@ -1,7 +1,11 @@
 # convector
 from convector.config import logging
-from convector.config import tokenized_output_dir, K
+from convector.config import tokenized_output_dir, K, modelpath
 from convector.gobbler import ReaderIterator
+from convector.wordlist import WordList
+from gensim.models import Word2Vec
+
+from thurnbauer.models.dbscan_clustering_matrix import DbscanClusteringMatrix
 
 # py
 from pathlib import Path
