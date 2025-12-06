@@ -1,7 +1,7 @@
 # convector
-from config import logging
-from config import tokenized_output_dir, K
-from gobbler import TrainingIterator
+from convector.config import logging
+from convector.config import tokenized_output_dir, K
+from convector.gobbler import TrainingIterator
 
 # py
 from pathlib import Path

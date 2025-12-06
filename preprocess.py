@@ -1,9 +1,9 @@
-from gobbler import Preprocessor
+from convector.gobbler import Preprocessor
+from convector.config import logging
 import sys
 from pathlib import Path
 import re
 import time
-from config import logging
 
 start = time.time()
 # using command line argument, pattern of extracted Wikipedia files

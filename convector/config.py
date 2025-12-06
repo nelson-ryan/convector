@@ -13,7 +13,7 @@ from pathlib import Path
 K = 5
 
 try:
-    base = Path(__file__).parent
+    base = Path(__file__).parent.parent
 except NameError:
     base = Path().home() / "hlt" / "convector"
 
