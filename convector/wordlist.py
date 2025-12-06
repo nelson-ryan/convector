@@ -33,9 +33,9 @@ class WordList:
         result = {}
         for line in reader:
             for lemma in self.lemmas:
-                try:
+                if lemma in line:
                     i = line.index(lemma)
-                except ValueError:
+                else:
                     continue
                 s = max(0, i - K)
                 e = min(len(line), i + K + 1)
@@ -51,19 +51,19 @@ class WordList:
                     self._model.wv.get_index(word) for word in context
                     if word in self._model.wv
                 ]
+                if len(wordindices) < 1:
+                    continue
                 contextvector = np.mean(
                     self._model.wv.vectors[wordindices],
                     axis = 0
                 )
-                if len(wordindices) < 1:
-                    continue
                 contextvectors.setdefault(cardword, []).append(contextvector)
         return contextvectors
 
 if __name__ == "__main__":
     model = Word2Vec.load(str(modelpath))
     word = "bangle"
-    wl = WordList([word], model)
+    wl = WordList([word, "ring"], model)
     len(wl.contextwords[word])
     len(wl.contextvectors[word])
 
