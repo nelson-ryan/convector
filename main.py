@@ -5,7 +5,7 @@ from convector.gobbler import ReaderIterator
 from convector.wordlist import WordList
 from gensim.models import Word2Vec
 
-from thurnbauer.models.dbscan_clustering_matrix import DbscanClusteringMatrix
+from thurnbauer.src.models.dbscan_clustering_matrix import DbscanClusteringMatrix
 
 # py
 from pathlib import Path
@@ -21,3 +21,6 @@ if __name__ == '__main__':
      #        "iron", "macho", "piano", "rocket"
     ]
     # wl = WordList(words)
+
+    model = Word2Vec.load(str(modelpath))
+    wordlist = WordList(words, model)
