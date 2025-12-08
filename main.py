@@ -17,25 +17,27 @@ from sklearn.cluster import DBSCAN
 if __name__ == '__main__':
 
     # TODO get from Connections
-    words = ["bangle", "chain", "charm", "ring",
-     #        "event", "function", "party", "reception",
-     #        "appeal", "campaign", "lobby", "press",
-     #        "iron", "macho", "piano", "rocket"
+    # 2025-10-15
+    words = ["infinity", "kiddie", "kidney", "olympic",
+            "bravo", "delta", "golf", "lima",
+            "bronco", "fiesta", "mustang", "pinto",
+            "elephant", "great", "navy", "vacuum"
     ]
     model = Word2Vec.load(str(modelpath))
     wl = WordList(words, model)
+    _ = wl.contextvectors # Not pretty, but this caches them before use below
 
     logging.info("Starting DBSCAN fitting")
     start = time.time()
     clustered_centroids = []
     for word in words:
         dbscan = DBSCAN(
-            eps = .21, min_samples = 15, metric = "cosine",
+            eps = .20, min_samples = 10, metric = "cosine",
             n_jobs = multiprocessing.cpu_count() - 1
         )
         contextvectors = np.array(wl.contextvectors[word])
         fitstart = time.time()
-        logging.info(f"Fitting {word} to new DBSCAN model")
+        logging.info(f"Fitting '{word}' to new DBSCAN model, with {len(wl.contextvectors[word])} instances")
         dbscan.fit(wl.contextvectors[word])
         logging.info(f"Duration for {word}: {time.time() - fitstart}")
 

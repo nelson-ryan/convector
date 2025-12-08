@@ -25,10 +25,10 @@ class WordList:
         return self._calculate_contextvectors()
 
     @cached_property
-    def contextwords(self) -> dict[str, list[list]]:
-        return self._get_contextwords()
+    def contextword_indices(self) -> dict[str, list[list]]:
+        return self._get_contextword_indices()
 
-    def _get_contextwords(self) -> dict[str, list[list]]:
+    def _get_contextword_indices(self) -> dict[str, list[list]]:
         reader = ReaderIterator(tokenized_output_dir)
         result = {}
         for line in reader:
@@ -40,31 +40,22 @@ class WordList:
                 s = max(0, i - K)
                 e = min(len(line), i + K + 1)
                 context = line[s:i] + line[i+1:e]
-                result.setdefault(lemma, []).append(context)
+                context = [
+                    self._model.wv.get_index(word) for word in context
+                    if word in self._model.wv
+                ]
+                if len(context) > 0:
+                    result.setdefault(lemma, []).append(context)
         return result
 
     def _calculate_contextvectors(self):
         contextvectors = {}
-        for cardword, contexts in self.contextwords.items():
+        for cardword, contexts in self.contextword_indices.items():
             for context in contexts:
-                wordindices = [
-                    self._model.wv.get_index(word) for word in context
-                    if word in self._model.wv
-                ]
-                if len(wordindices) < 1:
-                    continue
                 contextvector = np.mean(
-                    self._model.wv.vectors[wordindices],
+                    self._model.wv.vectors[context],
                     axis = 0
                 )
                 contextvectors.setdefault(cardword, []).append(contextvector)
         return contextvectors
-
-if __name__ == "__main__":
-    model = Word2Vec.load(str(modelpath))
-    word = "bangle"
-    wl = WordList([word, "ring"], model)
-    len(wl.contextwords[word])
-    len(wl.contextvectors[word])
-
 
