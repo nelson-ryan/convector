@@ -1,5 +1,8 @@
 
 
+This project used the 2025-11-01 Wikipedia dump; the file is directly available
+[here (23GB).](https://dumps.wikimedia.org/enwiki/20251120/enwiki-20251120-pages-articles-multistream.xml.bz2)
+
 Use wikipediaextractor.WikipediaExtractor
 
 Crucially update the `extract.py` file with commit [ab8988e](https://github.com/attardi/wikiextractor/commit/ab8988ebfa9e4557411f3d4c0f4ccda139e18875) for compatibility with Python 3.12
