@@ -69,3 +69,15 @@ python train_model.py
 takes substantially less time
 (just over 3.5 hours on 31 of 32 cores of a
 13th Gen Intel i9-13900HX processor).
+
+
+## Execution
+
+In the present state, `main.py` relies on an existing model
+and tokenized text files, each
+in the locations defined in `convector/config.py`.
+
+It takes a set of example words taken from Connections No. 857 from 2025-10-15
+(excluding two resource-demanding words),
+calculates their clusters,
+and prints a ranked list of nearest clusters for each word.
