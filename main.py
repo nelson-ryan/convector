@@ -1,14 +1,12 @@
 # convector
 from convector.config import logging
-from convector.config import tokenized_output_dir, K, modelpath
-from convector.gobbler import ReaderIterator
+from convector.config import modelpath
 from convector.wordlist import WordList
 from gensim.models import Word2Vec
 import numpy as np
 import multiprocessing
 
 # py
-from pathlib import Path
 import time
 
 from sklearn.cluster import DBSCAN
@@ -18,10 +16,11 @@ if __name__ == '__main__':
 
     # TODO get from Connections
     # 2025-10-15
-    words = ["infinity", "kiddie", "kidney", "olympic",
-            "bravo", "delta", "golf", "lima",
-            "bronco", "fiesta", "mustang", "pinto",
-            "elephant", "great", "navy", "vacuum"
+    words = ["infinity", "kiddie", "kidney", # "olympic", # types of pools
+            "bravo", "delta", "golf", "lima", # NATO alphabet
+            "bronco", "fiesta", "mustang", "pinto", # Ford models
+            "elephant", # "great",
+             "navy", "vacuum" # __SEAL
     ]
     model = Word2Vec.load(str(modelpath))
     wl = WordList(words, model)
@@ -52,3 +51,34 @@ if __name__ == '__main__':
                 (word, label, centroid)
             )
     logging.info(f"DBSCAN total duration: {time.time() - start}")
+    for word in words:
+        print(word, len([x for x in clustered_centroids if x[0] == word]))
+
+    # import pickle
+    # with open("clustered_centroids.pickle", "wb") as pfile:
+        # pickle.dump(clustered_centroids, pfile)
+    # with open("clustered_centroids.pickle", "rb") as pfile:
+        # clustered_centroids = pickle.load(pfile)
+
+
+    def pnorm(v, p = 2):
+        v = np.array(v)
+        return np.power(np.power(v + 1e-8, p).sum(), 1/p)
+    def cosim(a, b):
+        return np.dot(a, b) / (pnorm(a) * pnorm(b))
+
+    res = []
+    for word in words:
+        alltarget = [x for x in clustered_centroids if x[0] == word]
+        compwords = [x for x in clustered_centroids if x[0] != word]
+        for target in alltarget:
+            for compword in compwords:
+                sim = cosim(target[2], compword[2])
+                res.append((word, compword[0], sim))
+    res.sort(key = lambda x: x[2], reverse = True)
+    for word in words:
+        print("\n" + word)
+        print(
+            *[(comp, sim) for wd, comp, sim in res if wd == word][:3],
+            sep = "\n"
+        )
