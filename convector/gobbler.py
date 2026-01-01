@@ -32,7 +32,6 @@ class Gobbler:
         raise NotImplementedError
 
 
-#TODO make a parent class for these two classes; there's just too much overlap
 class Preprocessor:
     """ Preprocessor to tokenize and lemmatize Wikipedia dump files
     """
@@ -120,7 +119,6 @@ class ReaderIterator:
     def _gobble_dir(self, path: Path):
         for root, _, files in os.walk(path):
             for file in files:
-                # if file not in ["wiki_18"]:
                 if not re.match(pattern = r'^wiki_\d\d$', string = file):
                     continue
                 filepath = Path(root) / file

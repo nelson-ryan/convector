@@ -54,11 +54,11 @@ if __name__ == '__main__':
     for word in words:
         print(word, len([x for x in clustered_centroids if x[0] == word]))
 
-    # import pickle
+    import pickle
     # with open("clustered_centroids.pickle", "wb") as pfile:
-        # pickle.dump(clustered_centroids, pfile)
-    # with open("clustered_centroids.pickle", "rb") as pfile:
-        # clustered_centroids = pickle.load(pfile)
+     #    pickle.dump(clustered_centroids, pfile)
+    with open("clustered_centroids.pickle", "rb") as pfile:
+        clustered_centroids = pickle.load(pfile)
 
 
     def pnorm(v, p = 2):
