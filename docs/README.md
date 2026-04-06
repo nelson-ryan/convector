@@ -1,3 +1,19 @@
+`convector`
+### Looking for Connections in All the Wrong Places
+
+Begun as a course project for LING 582 'Advanced Statistical Natural Language
+Processing' in Fall 2025, this is an extension of a similar project,
+[`connector`](https://github.com/nelson-ryan/connector),
+itself part of LING 508 'Computational Techniques for Linguists'.
+
+A discussion of the project's methods are posted
+[here](https://uazhlt-ms-program.github.io/ling-582-fall-2025-course-blog/1184776211/course-project),
+on a blog page containing other projects for the same course,
+as well as within this very repository [here](index.mdx).
+The repository in which code was submitted for the course is
+[here](https://github.com/uazhlt-ms-program/ling-582-fall-2025-course-project-code-1184776211).
+
+
 ## Setup
 
 The included Dockerfile includes Python dependencies, including wikiextractor.

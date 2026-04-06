@@ -1,0 +1,216 @@
+---
+title: "Looking for Connections in All the Wrong Places"
+slug: "/1184776211/course-project"
+date: 2025-11-13
+author: 1184776211
+description: "Applying the DBSCAN approach of unsupervised word disambiguation to automatic solving of the New York Times Games Connections puzzle."
+tags:
+  - course project
+---
+
+<table>
+  <caption>
+    Course Project Info
+  </caption>
+<tbody>
+  <tr>
+    <th>Code Repository URL</th>
+    <td>https://github.com/uazhlt-ms-program/ling-582-fall-2025-course-project-code-1184776211</td>
+  </tr>
+  <tr>
+    <th>Demo URL (optional)</th>
+    <td></td>
+  </tr>
+  <tr>
+    <th>Team name</th>
+    <td>1184776211</td>
+  </tr>
+</tbody>
+</table>
+
+
+## Project description
+
+NYT Games Connections is a daily puzzle that presents the user with 16
+items—generally individual words or short phrases—on 16 "cards" that the user is
+challenged to group into four categories of four cards according to unspecified
+(until after solving) commonalities within each category.
+Most commonly, said commonalities are semantic, often specifically words that
+appear within some given context.
+Because the words are often deliberately chosen for their ambiguity,
+word-disambiguation is a core part of the puzzle.
+
+Meanwhile, [Thurnbauer et al. 2023](https://arxiv.org/abs/2307.13417)
+present a method of unsupervised
+word-disambiguation by means of density-based clustering (DBSCAN) based on
+a given target word's context in a corpus.
+
+I have chosen to adapt their approach to word-disambiguation to the task of
+the Connections solver; that is, exploring their approach as a means to
+automatically generate a solution to any given Connections puzzle.
+This is a continuation of an earlier attempt to achieve the same.
+The first attempt, which simply used a cosine comparison of pre-trained
+GloVe embeddings, was ineffective. That ineffectiveness is not entirely
+surprising, because such word embeddings encoded all meanings of a word,
+which is problematic when a single meaning is the key to a solution.
+
+Because part of the spirit of this project is a re-creation of previous work,
+it can't be said to be entirely novel; however, the adaptation of that work
+toward my particular application of course is.
+
+## Summary of individual contributions
+<table>
+  <thead>
+  <tr>
+    <th>Team member</th>
+    <th>Role/contributions</th>
+  </tr>
+  </thead>
+<tbody>
+  <tr>
+    <th><b>1184776211</b></th>
+    <td>Sole contributor</td>
+  </tr>
+</tbody>
+</table>
+
+## Approach
+
+While I was able to obtain the code used by Thurnbauer et al. for their
+published paper, I found that it relied heavily on a pre-existing model,
+i.e. that which they trained for their own use, and various external files.
+Indeed, I had no expectation to use their particular model (not only because
+it used the German wikipedia), this left me to devise the preprocessing
+and training.
+
+I largely followed what Thurnbauer et al. described in their paper.
+That is, I also used Wikipedia as a corpus (albeit the English one).
+Similarly, I followed their lead in using Spacy for preprocessing and CBOW
+with a window of 5 for the model.
+
+Then, for each word in a given test puzzle, a vector for every context therof
+was created by averaging the trained embedding for each word in the individual
+context.
+
+The set of context vectors were then fit to a DBSCAN model—that is, one DBSCAN
+for the set of one word's context vectors. Roughly following Thurnbauer et al.,
+the parameters used for DBSCAN were an epsilon value of .2 and a minimum count
+of 10.  
+The DBSCAN result is then a set of clustered vectors, meant to correspond to
+a distinct or polysemic sense of a word.
+
+As a first pass of comparing these clusters, I chose to represent the cluster
+with the centroid of its members, then ran a cosine comparison of each of a
+word's clusters against all clusters of other words.
+
+## Results and Errors
+
+As it stands now, the results are imperfect, but may show some promise.
+consider the word set below from Connections No. 857 from 2025-10-15:
+
+1. Types of pools: infinity | kiddie | kidney | olympic
+1. NATO phonetic alphabet: bravo | delta | golf | lima
+1. Ford models: bronco | fiesta | mustang | pinto
+1. ___ seal: elephant | great | navy | vacuum
+
+As an exploratory test, below are each word—in no particular order,
+but to the exclusion of 'olympic' and 'general'—and the top closest (in terms of
+cosine similarity) cluster centroid vector.
+
+While the result does not conform to the puzzle categories
+(which is not to be expected, because the types of *intuitive* similarity are
+not the same in each group), there are identifiable commonalities within
+a group's rankings.
+
+These commonalities also indicate some of the possible red herrings of the
+puzzle.
+For example, there is a pattern of models of cars being grouped together;
+while this is an intended categorization, the inclusion of 'golf' (a Volkswagen
+model) is reasonable. Similarly, 'lima' and 'pinto' are near, being names of
+beans.
+
+```
+fiesta                     mustang
+'bronco'     0.9103        'bronco'     0.9485
+'golf'       0.9020        'bravo'      0.8688
+'bravo'      0.8757        'fiesta'     0.8560 
+
+lima                       bronco
+'pinto'      0.99447       'mustang'    0.9485
+'navy'       0.9251        'fiesta'     0.9103
+'elephant'   0.9120        'golf'       0.8989 
+
+pinto                      elephant
+'lima'       0.9944        'navy'       0.9697 
+'navy'       0.9188        'lima'       0.9120
+'elephant'   0.9109        'pinto'      0.9109 
+
+infinity                   kiddie
+'bravo'      0.9410        'elephant'   0.8395
+'vacuum'     0.9030        'mustang'    0.8335
+'pinto'      0.8841        'bronco'     0.8305 
+
+kidney                     bravo
+'vacuum'     0.8478        'infinity'   0.9410 
+'elephant'   0.7948        'pinto'      0.8906 
+'infinity'   0.7898        'fiesta'     0.8757 
+
+delta                      golf
+'elephant'   0.8671        'fiesta'     0.9020 
+'navy'       0.8549        'bronco'     0.8989 
+'mustang'    0.8531        'mustang'    0.8386 
+
+navy                       vacuum
+'elephant'   0.9697        'infinity'   0.9030
+'lima'       0.9251        'bronco'     0.8938
+'pinto'      0.9188        'kidney'     0.8478
+```
+
+Of course, this is just a start.
+There are a few ways in which these can be refined.
+Here, I've only compared cluster centroids, whereas Thurnbauer et al.
+offer different types of comparisons that yield different similarities:
+thematic similarity versus similarity in type and function.
+
+Given that the different categorizations from the puzzle use different types of
+similarity, multiple such means of comparison should be incorporated.
+
+Even then, I will need to devise a way to perform the grouping that best allows
+for an even classification of four words into four groups. This is a matter
+of future consideration.
+
+## Other future improvements
+
+It is worth acknowledging that there is already a follow-up paper from (many of) 
+the same authors: Reisinger, Goller and Fischer (2024);
+however, I have not yet delved into this later work.
+
+It is also worth acknowledging that Thurnbauer et al. themselves pointed out
+that a TF-IDF adjustment on context words may be effective in narrowing words'
+distinct meanings; I believe that that is a reasonable assessment.
+
+That being said, mine is still very much an incomplete project, so there is
+much to be done in order to apply these clustered vectors to the puzzle.
+
+One thing that stands out in particular if I were to continue with the
+DBSCAN approach is that
+considerations must be made for the computational time required by DBSCAN,
+which is impractical for common words, appearing to run at O(n^2).
+For instance, 'navy', with 349,335 occurrences, took a bit over 18 minutes.
+Meanwhile, extrapolating for 'great', with 1.2 million occurrences,
+could take as much as 3 hours (to say nothing of memory limitations).
+For the moment, I've simply excluded from testing any words with excessive
+counts. It consider it might be reasonable to simply set a cap on the number
+of occurrences/contexts to use, randomly sampled, which I imagine would still
+be plenty of data to capture the distinct clusters.
+
+## [Link to code repo](https://github.com/uazhlt-ms-program/ling-582-fall-2025-course-project-code-1184776211)
+
+## Reproducibility
+
+See [README](https://github.com/uazhlt-ms-program/ling-582-fall-2025-course-project-code-1184776211)
+
+## References
+Thurnbauer, Matthias, Johannes Reisinger, Christoph Goller, and Andreas Fischer. 2023. *Towards Resolving Word Ambiguity with Word Embeddings*. arXiv. https://arxiv.org/abs/2307.13417
+
+Reisinger, Johaness, Christop Goller, and Andreas Fischer. 2024. 14th International Conference on Advanced Computer Information Technologies. https://ieeexplore.ieee.org/document/10712629
