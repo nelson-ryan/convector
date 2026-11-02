@@ -15,9 +15,9 @@ K = 5
 ROOT = Path(__file__).parents[2]
 
 # wikipath = ROOT / "wikidump" / "text_notemplate" / "AA" / "wiki_00"
-wikipath = ROOT / "wikidump" / "text_notemplate"
+WIKIPATH = ROOT / "wikidump" / "text_notemplate"
 
-tokenized_output_dir = ROOT / "wikidump" / "processed"
+TOKENIZED_OUTPUT_DIR = ROOT / "wikidump" / "processed"
 
-modelpath = ROOT / "model" / "convector.model"
+MODELPATH = ROOT / "model" / "convector.model"
 

@@ -21,7 +21,7 @@ if not source.exists():
 # define output file
 dest = Path(__file__).parent / "wikidump" / "processed" / name
 if not dest.parent.exists():
-    raise FileNotFoundError("destdir")
+    raise FileNotFoundError(f"destdir")
 
 # Run Preprocessor's SpaCy processing, outputting to file
 preprocessor = Preprocessor(wikipath = source, outfile = dest)

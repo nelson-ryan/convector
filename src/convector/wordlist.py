@@ -1,7 +1,7 @@
 from functools import cached_property
 from .config import (
     logging,
-    tokenized_output_dir,
+    TOKENIZED_OUTPUT_DIR,
     K
 )
 from .gobbler import Preprocessor, ReaderIterator
@@ -32,7 +32,7 @@ class WordList:
         return self._get_contextword_indices()
 
     def _get_contextword_indices(self) -> dict[str, list[list]]:
-        reader = ReaderIterator(tokenized_output_dir)
+        reader = ReaderIterator(TOKENIZED_OUTPUT_DIR)
         result = {}
         for line in reader:
             for lemma in self.lemmas:

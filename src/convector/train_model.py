@@ -1,8 +1,8 @@
 from .gobbler import ReaderIterator
 from .config import (
     logging,
-    tokenized_output_dir,
-    modelpath,
+    TOKENIZED_OUTPUT_DIR,
+    MODELPATH,
     K
 )
 import time
@@ -14,7 +14,7 @@ import multiprocessing
 # Train Word2Vec model
 logging.info("Starting model training.")
 start = time.time()
-sentences = ReaderIterator(tokenized_output_dir)
+sentences = ReaderIterator(TOKENIZED_OUTPUT_DIR)
 model = Word2Vec(
     sentences = sentences,
     sg = 0,         # CBOW
@@ -23,6 +23,6 @@ model = Word2Vec(
     min_count = 10, # following Thurnbauer et al
     workers = multiprocessing.cpu_count() - 1,
 )
-model.save(str(modelpath))
+model.save(str(MODELPATH))
 logging.info(f"Model training complete. Time {time.time() - start}")
 

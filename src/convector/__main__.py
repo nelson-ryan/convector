@@ -1,14 +1,12 @@
-# convector
 from .config import logging
-from .config import modelpath
+from .config import MODELPATH
 from .wordlist import WordList
-from gensim.models import Word2Vec
+
 import numpy as np
 import multiprocessing
-
-# py
 import time
 
+from gensim.models import Word2Vec
 from sklearn.cluster import DBSCAN
 
 
@@ -17,12 +15,12 @@ if __name__ == '__main__':
     # TODO get from Connections
     # 2025-10-15
     words = ["infinity", "kiddie", "kidney", # "olympic", # types of pools
-            "bravo", "delta", "golf", "lima", # NATO alphabet
-            "bronco", "fiesta", "mustang", "pinto", # Ford models
+            "bravo", "delta", "golf", "lima",             # NATO alphabet
+            "bronco", "fiesta", "mustang", "pinto",       # Ford models
             "elephant", # "great",
-             "navy", "vacuum" # __SEAL
+             "navy", "vacuum"                             # ___ SEAL
     ]
-    model = Word2Vec.load(str(modelpath))
+    model = Word2Vec.load(str(MODELPATH))
     wl = WordList(words, model)
     _ = wl.contextvectors # Not pretty, but this caches them before use below
 
