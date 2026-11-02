@@ -1,9 +1,12 @@
 from functools import cached_property
-from convector.gobbler import Preprocessor, ReaderIterator
-from convector.config import modelpath, tokenized_output_dir, K
+from .config import (
+    logging,
+    tokenized_output_dir,
+    K
+)
+from .gobbler import Preprocessor, ReaderIterator
 from gensim.models import Word2Vec
 import numpy as np
-from convector.config import logging
 
 
 class WordList:

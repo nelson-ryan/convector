@@ -1,5 +1,5 @@
-from convector.gobbler import Preprocessor
-from convector.config import logging
+from .gobbler import Preprocessor
+from .config import logging
 import sys
 from pathlib import Path
 import re

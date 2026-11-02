@@ -3,34 +3,7 @@ import os
 import re
 from pathlib import Path
 import time
-from convector.config import logging
-
-
-class Gobbler:
-    """ Parent class for iterators
-        path (Path): path to source, file or dir
-    """
-    def __init__(self, source):
-        self.source = source
-
-    def __iter__(self):
-        if isinstance(self.source, Path):
-            if self.source.is_file():
-                yield from self._gobble_file(self.source)
-            if self.source.is_dir():
-                yield from self._gobble_dir(self.source)
-        elif isinstance(self.source, list):
-            yield from self._process(self.source)
-
-    def _gobble_file(self, source):
-        raise NotImplementedError
-
-    def _gobble_dir(self, source):
-        raise NotImplementedError
-
-    def _process(self, source):
-        raise NotImplementedError
-
+from ..config import logging
 
 class Preprocessor:
     """ Preprocessor to tokenize and lemmatize Wikipedia dump files
@@ -95,33 +68,4 @@ class Preprocessor:
                     continue
                 filepath = Path(root) / file
                 yield from self._gobble_file(filepath)
-
-class ReaderIterator:
-    def __init__(self, path: Path):
-        self.path = path
-
-    def __iter__(self):
-        if not isinstance(self.path, Path):
-            raise TypeError
-        elif self.path.is_file():
-            yield from self._gobble_file(self.path)
-        elif self.path.is_dir():
-            yield from self._gobble_dir(self.path)
-        else:
-            raise TypeError
-
-    def _gobble_file(self, path: Path):
-        logging.info(f"Reading {path}")
-        with open(path) as file:
-            while line := file.readline():
-                yield line.strip().split(" ")
-
-    def _gobble_dir(self, path: Path):
-        for root, _, files in os.walk(path):
-            for file in files:
-                if not re.match(pattern = r'^wiki_\d\d$', string = file):
-                    continue
-                filepath = Path(root) / file
-                yield from self._gobble_file(filepath)
-
 

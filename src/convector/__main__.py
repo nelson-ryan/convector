@@ -1,7 +1,7 @@
 # convector
-from convector.config import logging
-from convector.config import modelpath
-from convector.wordlist import WordList
+from .config import logging
+from .config import modelpath
+from .wordlist import WordList
 from gensim.models import Word2Vec
 import numpy as np
 import multiprocessing
