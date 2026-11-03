@@ -1,0 +1,6 @@
+log*
+model/
+*/*.egg-info/
+thurnbauer/
+wikidump/
+wikiextractor/
