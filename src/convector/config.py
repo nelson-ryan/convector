@@ -1,8 +1,9 @@
 import logging
+from datetime import datetime
 
 logging.basicConfig(
     format = "%(asctime)s | %(levelname)s | %(message)s",
-    filename = "log.log",
+    filename = f"log_{datetime.today().strftime("%Y%m%d")}.log",
     level = logging.INFO
 )
 logging.getLogger().addHandler(logging.StreamHandler())

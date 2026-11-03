@@ -1,8 +1,6 @@
 import spacy
-import os
-import re
+import os, re
 from pathlib import Path
-import time
 from convector.config import logging
 
 class ReaderIterator:
@@ -28,7 +26,7 @@ class ReaderIterator:
     def _gobble_dir(self, path: Path):
         for root, _, files in os.walk(path):
             for file in files:
-                if not re.match(pattern = r'^wiki_\d\d$', string = file):
+                if not re.fullmatch(pattern = r'wiki_\d+', string = file):
                     continue
                 filepath = Path(root) / file
                 yield from self._gobble_file(filepath)

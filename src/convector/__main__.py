@@ -35,7 +35,7 @@ if __name__ == '__main__':
         model = Word2Vec.load(str(MODELPATH))
 
         wl = WordList(words, model)
-        _ = wl.contextvectors # Not pretty, but this caches them before use below
+        _ = wl.contextvectors # caches them before DBSCAN timer
 
         logging.info("Starting DBSCAN fitting")
         start = time.time()
